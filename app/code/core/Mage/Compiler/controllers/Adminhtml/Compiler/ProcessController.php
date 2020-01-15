@@ -20,7 +20,7 @@
  *
  * @category    Mage
  * @package     Mage_Compiler
- * @copyright  Copyright (c) 2006-2016 X.commerce, Inc. and affiliates (http://www.magento.com)
+ * @copyright  Copyright (c) 2006-2019 Magento, Inc. (http://www.magento.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -83,10 +83,17 @@ class Mage_Compiler_Adminhtml_Compiler_ProcessController extends Mage_Adminhtml_
         /**
          * Add redirect heades before clear compiled sources
          */
-        $this->_redirect('*/*/run');
-        $this->_getCompiler()->clear();
-        $this->getResponse()->sendHeaders();
-        exit;
+        if (defined('COMPILER_INCLUDE_PATH')) {
+            Mage::getSingleton('adminhtml/session')->addError(
+                Mage::helper('compiler')->__('Please, press disable button before run compilation process')
+            );
+            $this->_redirect('*/*/');
+        } else {
+            $this->_redirect('*/*/run');
+            $this->_getCompiler()->clear();
+            $this->getResponse()->sendHeaders();
+            exit;
+        }
     }
 
     public function disableAction()
